@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/employees")
 @AllArgsConstructor
+@ControllerAdvice
 public class EmployeeController {
 
     private EmployeeService employeeService;

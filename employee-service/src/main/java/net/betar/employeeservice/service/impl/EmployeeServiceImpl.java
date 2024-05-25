@@ -3,6 +3,7 @@ package net.betar.employeeservice.service.impl;
 import lombok.AllArgsConstructor;
 import net.betar.employeeservice.dto.EmployeeDto;
 import net.betar.employeeservice.entity.Employee;
+import net.betar.employeeservice.exception.ResourceNotFoundException;
 import net.betar.employeeservice.repository.EmployeeRepository;
 import net.betar.employeeservice.service.EmployeeService;
 import org.modelmapper.ModelMapper;
@@ -28,7 +29,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeDto getEmployeeById(Long id) {
-        Employee employee = employeeRepository.findById(id).orElse(null);
+        Employee employee = employeeRepository.findById(id).orElseThrow(
+                ()-> new ResourceNotFoundException("Employee","id", id)
+        );
         //using model mapper
         EmployeeDto employeeDto = modelMapper.map(employee, EmployeeDto.class);
 

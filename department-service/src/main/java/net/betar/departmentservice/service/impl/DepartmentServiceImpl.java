@@ -3,6 +3,7 @@ package net.betar.departmentservice.service.impl;
 import lombok.AllArgsConstructor;
 import net.betar.departmentservice.dto.DepartmentDto;
 import net.betar.departmentservice.entity.Department;
+import net.betar.departmentservice.exception.ResourceNotFoundException;
 import net.betar.departmentservice.mapper.AutoDepartmentMapper;
 import net.betar.departmentservice.repository.DepartmentRepository;
 import net.betar.departmentservice.service.DepartmentService;
@@ -38,14 +39,12 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public DepartmentDto getDepartmentByCode(String departmentCode) {
         Department department = departmentRepository.findByDepartmentCode(departmentCode);
+        if(department == null){
+            throw new ResourceNotFoundException("Department","code", departmentCode);
+        }
         //using mapstruct
         DepartmentDto departmentDtoReturn = AutoDepartmentMapper.MAPPER.maptoDepartmentDto(department);
-//        DepartmentDto departmentDtoReturn = new DepartmentDto(
-//                department.getId(),
-//                department.getDepartmentName(),
-//                department.getDepartmentDescription(),
-//                department.getDepartmentCode()
-//        );
+
         return departmentDtoReturn;
     }
 }
