@@ -29,8 +29,9 @@ import java.time.Duration;
 public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeRepository employeeRepository;
     private ModelMapper modelMapper;
-//    private APIClient apiClient;
-private WebClient webClient;
+    @Autowired
+    private APIClient apiClient;
+//private WebClient webClient;
 
 
     @Override
@@ -54,10 +55,11 @@ private WebClient webClient;
         EmployeeDto employeeDto = modelMapper.map(employee, EmployeeDto.class);
 
 
-//        DepartmentDto departmentDto = apiClient.getDepartmentsByCode(employee.getDepartmentCode());
+        DepartmentDto departmentDto = apiClient.getDepartmentsByCode(employee.getDepartmentCode());
 
+       // employeeDto.setDepartmentCode(departmentDto.getDepartmentCode());
 //        DepartmentDto departmentDto = webClient.get()
-//                .uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode())
+//                .uri("http://192.168.69.23:8080/api/departments/" + employee.getDepartmentCode())
 //                .retrieve()
 //                .bodyToMono(DepartmentDto.class)
 //                .block();
@@ -65,7 +67,7 @@ private WebClient webClient;
 
         APIResponseDto apiResponseDto = new APIResponseDto();
         apiResponseDto.setEmployee(employeeDto);
-       // apiResponseDto.setDepartment(departmentDto);
+        apiResponseDto.setDepartment(departmentDto);
 
 
         return apiResponseDto;

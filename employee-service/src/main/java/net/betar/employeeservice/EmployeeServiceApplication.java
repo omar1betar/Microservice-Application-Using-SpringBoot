@@ -17,7 +17,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
 @SpringBootApplication
-//@EnableFeignClients
+@EnableFeignClients
 //@EnableWebFlux
 public class EmployeeServiceApplication {
 
