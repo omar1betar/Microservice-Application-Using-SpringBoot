@@ -1,0 +1,41 @@
+# create instance- from maven create package then navigate to target folder then run this command
+java -jar -Dserver.port=8773 department-service-0.0.1-SNAPSHOT.jar
+
+
+RabbitMQ on docker
+docker run --rm -it -p 5672:5672 rabbitmq
+
+zipkin on docker
+docker run --rm -it --name zipkin -p 9411:9411 openzipkin/zipkin
+
+##enable distrbuted tracing
+# add those to pom
+<dependency>
+	<groupId>io.micrometer</groupId>
+	<artifactId>micrometer-observation</artifactId>
+</dependency>
+<dependency>
+	<groupId>io.micrometer</groupId>
+	<artifactId>micrometer-tracing-bridge-brave</artifactId>
+</dependency>
+<dependency>
+	<groupId>io.zipkin.reporter2</groupId>
+	<artifactId>zipkin-reporter-brave</artifactId>
+</dependency>
+<dependency>
+	<groupId>io.github.openfeign</groupId>
+	<artifactId>feign-micrometer</artifactId>
+</dependency>
+
+<!-- Fix MAC OS M1 issue -->
+<dependency>
+	<groupId>io.netty</groupId>
+	<artifactId>netty-resolver-dns-native-macos</artifactId>
+	<classifier>osx-aarch_64</classifier>
+</dependency>
+
+# add those lines to application.properties
+
+management.tracing.sampling.probability=1.0
+logging.pattern.level=%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]
+logging.level.org.springframework.web=DEBUG

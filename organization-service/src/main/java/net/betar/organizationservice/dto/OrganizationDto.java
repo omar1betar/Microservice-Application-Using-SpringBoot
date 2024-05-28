@@ -1,22 +1,21 @@
-package net.betar.employeeservice.dto;
+package net.betar.organizationservice.dto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmployeeDto {
-
+public class OrganizationDto {
     private Long id;
-    private String firstName;
-    private String lastName;
-    private String emailAddress;
-    private String departmentCode;
+    private String organizationName;
+    private String organizationDescription;
     private String organizationCode;
-
-
+    private LocalDateTime createdDate;
 }
