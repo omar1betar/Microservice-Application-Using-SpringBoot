@@ -1,5 +1,6 @@
 package net.betar.employeeservice.service.impl;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
 import net.betar.employeeservice.dto.APIResponseDto;
 import net.betar.employeeservice.dto.DepartmentDto;
@@ -30,8 +31,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeRepository employeeRepository;
     private ModelMapper modelMapper;
     @Autowired
-    private APIClient apiClient;
-//private WebClient webClient;
+//    private APIClient apiClient;
+private WebClient webClient;
 
 
     @Override
@@ -45,6 +46,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeDtoResponse;
     }
 
+    @CircuitBreaker(name = "${spring.application.name}",fallbackMethod = "getDefaultDepartment")
     @Override
     public APIResponseDto getEmployeeById(Long id) {
         Employee employee = employeeRepository.findById(id).orElseThrow(
@@ -55,15 +57,37 @@ public class EmployeeServiceImpl implements EmployeeService {
         EmployeeDto employeeDto = modelMapper.map(employee, EmployeeDto.class);
 
 
-        DepartmentDto departmentDto = apiClient.getDepartmentsByCode(employee.getDepartmentCode());
+//        DepartmentDto departmentDto = apiClient.getDepartmentsByCode(employee.getDepartmentCode());
 
-       // employeeDto.setDepartmentCode(departmentDto.getDepartmentCode());
-//        DepartmentDto departmentDto = webClient.get()
-//                .uri("http://192.168.69.23:8080/api/departments/" + employee.getDepartmentCode())
-//                .retrieve()
-//                .bodyToMono(DepartmentDto.class)
-//                .block();
+//        employeeDto.setDepartmentCode(departmentDto.getDepartmentCode());
+        DepartmentDto departmentDto = webClient.get()
+                .uri("http://192.168.69.23:8771/api/departments/" + employee.getDepartmentCode())
+                .retrieve()
+                .bodyToMono(DepartmentDto.class)
+                .block();
 
+
+        APIResponseDto apiResponseDto = new APIResponseDto();
+        apiResponseDto.setEmployee(employeeDto);
+        apiResponseDto.setDepartment(departmentDto);
+
+
+        return apiResponseDto;
+    }
+
+    public APIResponseDto getDefaultDepartment(Long id ,Exception ex) {
+
+        Employee employee = employeeRepository.findById(id).orElseThrow(
+                ()-> new ResourceNotFoundException("Employee","id", id)
+        );
+
+        //using model mapper
+        EmployeeDto employeeDto = modelMapper.map(employee, EmployeeDto.class);
+
+        DepartmentDto departmentDto = new DepartmentDto();
+        departmentDto.setDepartmentName("default");
+        departmentDto.setDepartmentDescription("Default");
+        departmentDto.setDepartmentCode("0");
 
         APIResponseDto apiResponseDto = new APIResponseDto();
         apiResponseDto.setEmployee(employeeDto);
